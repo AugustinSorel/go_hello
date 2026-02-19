@@ -27,11 +27,43 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Test & Coverage') {
             steps {
-                echo 'Running tests...'
-                // If you had a main_test.go, this would run it
-                sh 'go test ./...' 
+                echo 'Running tests and generating coverage report...'
+                // The -coverprofile flag generates the file SonarQube needs
+                sh 'go test -coverprofile=coverage.out ./...' 
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            environment {
+                // This name MUST match what you set in Step 4
+                SCANNER_HOME = tool 'SonarScanner' 
+            }
+            steps {
+                // This name MUST match what you set in Step 3
+                withSonarQubeEnv('SonarQube') { 
+                    sh '''
+                    $SCANNER_HOME/bin/sonar-scanner \
+                      -Dsonar.projectKey=hello-world-go-api \
+                      -Dsonar.projectName="Hello World Go API" \
+                      -Dsonar.sources=. \
+                      -Dsonar.exclusions=**/*_test.go \
+                      -Dsonar.tests=. \
+                      -Dsonar.test.inclusions=**/*_test.go \
+                      -Dsonar.go.coverage.reportPaths=coverage.out
+                    '''
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    // Pauses the pipeline until SonarQube finishes analyzing
+                    // Will fail the build if the code is lower quality than allowed
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
 
@@ -48,7 +80,7 @@ pipeline {
                 '''
                 */
                 
-                echo 'Deployment stage complete. (Uncomment and configure SSH steps above for actual server deployment)'
+                echo 'Deployment stage complete bite. (Uncomment and configure SSH steps above for actual server deployment)'
             }
         }
     }

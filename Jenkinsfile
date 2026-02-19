@@ -27,9 +27,9 @@ pipeline {
 
         stage('Test & Coverage') {
             steps {
-                echo 'Running tests and generating coverage report...'
-                // The -coverprofile flag generates the file SonarQube needs
-                sh 'go test -coverprofile=coverage.out ./...' 
+                echo 'Running tests...'
+                // Removed the -coverprofile flag
+                sh 'go test ./...'
             }
         }
 

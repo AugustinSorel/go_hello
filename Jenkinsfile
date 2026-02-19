@@ -14,7 +14,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Pulls the latest code from your Git repository
                 checkout scm
             }
         }
@@ -22,7 +21,6 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the Go API...'
-                // Compiles the Go code for a Linux environment
                 sh 'GOOS=linux GOARCH=amd64 go build -o ${APP_NAME} main.go'
             }
         }
@@ -70,17 +68,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                // The deployment step heavily depends on your infrastructure.
-                // Below is an example of copying the binary to a remote server via SSH
-                // and restarting a systemd service.
-                
-                /* sh '''
-                scp -o StrictHostKeyChecking=no ${APP_NAME} user@your-server-ip:/opt/api/
-                ssh -o StrictHostKeyChecking=no user@your-server-ip "sudo systemctl restart hello-api"
-                '''
-                */
-                
-                echo 'Deployment stage complete bite. (Uncomment and configure SSH steps above for actual server deployment)'
+                // ... your deployment scripts ...
             }
         }
     }

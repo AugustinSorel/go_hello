@@ -9,6 +9,7 @@ pipeline {
     environment {
         // Defines the output name of your compiled binary
         APP_NAME = "hello-world-api"
+        SCANNER_HOME = tool 'sonar-scanner'
     }
 
     stages {
@@ -36,21 +37,11 @@ pipeline {
         stage('SonarQube Analysis') {
             environment {
                 // This name MUST match what you set in Step 4
-                SCANNER_HOME = tool 'SonarScanner' 
+                SCANNER_HOME = tool 'sonar-scanner'
             }
             steps {
-                // This name MUST match what you set in Step 3
-                withSonarQubeEnv('SonarQube') { 
-                    sh '''
-                    $SCANNER_HOME/bin/sonar-scanner \
-                      -Dsonar.projectKey=hello-world-go-api \
-                      -Dsonar.projectName="Hello World Go API" \
-                      -Dsonar.sources=. \
-                      -Dsonar.exclusions=**/*_test.go \
-                      -Dsonar.tests=. \
-                      -Dsonar.test.inclusions=**/*_test.go \
-                      -Dsonar.go.coverage.reportPaths=coverage.out
-                    '''
+                withSonarQubeEnv('SonarQube-Server') {
+                    sh "${SCANNER_HOME}/bin/sonar-scanner"
                 }
             }
         }

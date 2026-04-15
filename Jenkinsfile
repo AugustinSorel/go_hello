@@ -40,8 +40,17 @@ pipeline {
                 SCANNER_HOME = tool 'sonar-scanner'
             }
             steps {
-                withSonarQubeEnv('SonarQube-Server') {
-                    sh "${SCANNER_HOME}/bin/sonar-scanner"
+                withSonarQubeEnv('SonarQube') { 
+                    sh '''
+                    $SCANNER_HOME/bin/sonar-scanner \
+                      -Dsonar.projectKey=hello-world-go-api \
+                      -Dsonar.projectName="Hello World Go API" \
+                      -Dsonar.sources=. \
+                      -Dsonar.exclusions=**/*_test.go \
+                      -Dsonar.tests=. \
+                      -Dsonar.test.inclusions=**/*_test.go \
+                      -Dsonar.go.coverage.reportPaths=coverage.out
+                    '''
                 }
             }
         }

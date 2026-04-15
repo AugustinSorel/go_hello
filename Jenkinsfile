@@ -34,6 +34,25 @@ pipeline {
             }
         }
 
+        stage('Deploy to Nexus') {
+            steps {
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: 'host.docker.internal:8081',
+                    groupId: 'com.example.go',
+                    version: "1.0.${env.BUILD_ID}",
+                    repository: 'go-binaries',
+                    credentialsId: 'nexus-credentials',
+                    artifacts: [
+                        [artifactId: 'hello-world-api',
+                        file: 'hello-world-api',
+                        type: 'bin']
+                    ]
+                )
+            }
+        }
+
         stage('SonarQube Analysis') {
             environment {
                 // This name MUST match what you set in Step 4

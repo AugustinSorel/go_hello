@@ -40,7 +40,7 @@ pipeline {
                 SCANNER_HOME = tool 'sonar-scanner'
             }
             steps {
-                withSonarQubeEnv('SonarQube') { 
+                withSonarQubeEnv('SonarQube-Server') { 
                     sh '''
                     $SCANNER_HOME/bin/sonar-scanner \
                       -Dsonar.projectKey=hello-world-go-api \

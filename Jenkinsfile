@@ -1,13 +1,11 @@
 pipeline {
     agent any
 
-    // This loads the Go environment you configured in Jenkins
     tools {
-        go 'go-1.21' // Make sure this matches the name in Jenkins Global Tool Configuration
+        go 'go-1.21'
     }
 
     environment {
-        // Defines the output name of your compiled binary
         APP_NAME = "hello-world-api"
         SCANNER_HOME = tool 'sonar-scanner'
     }
@@ -29,14 +27,12 @@ pipeline {
         stage('Test & Coverage') {
             steps {
                 echo 'Running tests...'
-                // Removed the -coverprofile flag
                 sh 'go test ./...'
             }
         }
 
         stage('SonarQube Analysis') {
             environment {
-                // This name MUST match what you set in Step 4
                 SCANNER_HOME = tool 'sonar-scanner'
             }
             steps {
@@ -77,8 +73,6 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 timeout(time: 1, unit: 'HOURS') {
-                    // Pauses the pipeline until SonarQube finishes analyzing
-                    // Will fail the build if the code is lower quality than allowed
                     waitForQualityGate abortPipeline: true
                 }
             }
@@ -87,7 +81,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                // ... your deployment scripts ...
             }
         }
     }
